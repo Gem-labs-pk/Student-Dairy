@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#4f46e5">
+    <link rel="manifest" href="./manifest.json">
     <title>To Be. | Gem Labs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -27,10 +28,10 @@
         .dark .glass-card {
             background-color: #0f172a;
             border: 1px solid #1e293b;
-            box-shadow: none;
         }
         .nav-active { color: var(--primary); font-weight: 800; }
         .tab-btn.active { background: var(--primary); color: white; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
@@ -48,14 +49,14 @@
             </div>
             
             <div class="w-full space-y-3" id="auth-forms">
-                <div id="login-form" class="space-y-3">
+                <div id="form-container" class="space-y-3">
                     <input type="email" id="email" placeholder="Email Address" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:bg-white/20">
                     <input type="password" id="password" placeholder="Password" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:bg-white/20">
-                    <button onclick="authLogic.handleAuth('login')" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black shadow-lg">Login</button>
-                    <button onclick="authLogic.toggleMode()" class="w-full text-white/60 text-xs font-bold">New here? Create Account</button>
+                    <button id="auth-main-btn" onclick="window.authLogic.submit()" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black shadow-lg active:scale-95 transition-transform">Login</button>
+                    <button onclick="window.authLogic.toggleMode()" id="auth-toggle-btn" class="w-full text-white/60 text-xs font-bold">New here? Create Account</button>
                 </div>
             </div>
-            <div id="auth-status" class="mt-4 text-white text-xs font-medium text-center"></div>
+            <div id="auth-status" class="mt-6 text-white text-xs font-medium text-center px-4 leading-relaxed"></div>
         </div>
 
         <!-- Main UI -->
@@ -63,12 +64,15 @@
             <div>
                 <h2 class="text-2xl font-black tracking-tighter">To <span class="text-indigo-600">Be.</span></h2>
                 <div class="flex items-center gap-1">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="user-display">Guest User</p>
-                    <button onclick="authLogic.logout()" class="text-[8px] font-bold text-rose-500 uppercase">Logout</button>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="user-display">Syncing...</p>
+                    <button onclick="window.authLogic.logout()" class="text-[8px] font-bold text-rose-500 uppercase">Logout</button>
                 </div>
             </div>
             <div class="flex gap-2">
-                <button onclick="ui.toggleTheme()" class="p-3 glass-card rounded-2xl">
+                <button id="install-btn" class="hidden p-3 glass-card rounded-2xl text-indigo-600">
+                    <i data-lucide="download" class="w-5 h-5"></i>
+                </button>
+                <button onclick="window.ui.toggleTheme()" class="p-3 glass-card rounded-2xl">
                     <i data-lucide="moon" id="theme-icon" class="w-5 h-5 text-indigo-600"></i>
                 </button>
             </div>
@@ -81,26 +85,26 @@
         <!-- Navigation -->
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] z-50">
             <div class="glass-card p-2 flex justify-around items-center bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl">
-                <button onclick="router.navigate('timetable')" id="nav-timetable" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="window.router.navigate('timetable')" id="nav-timetable" class="p-3 flex flex-col items-center gap-1 text-slate-400">
                     <i data-lucide="calendar-days" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Plan</span>
                 </button>
-                <button onclick="router.navigate('tasks')" id="nav-tasks" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="window.router.navigate('tasks')" id="nav-tasks" class="p-3 flex flex-col items-center gap-1 text-slate-400">
                     <i data-lucide="list-todo" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Tasks</span>
                 </button>
-                <button onclick="router.navigate('focus')" id="nav-focus" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="window.router.navigate('focus')" id="nav-focus" class="p-3 flex flex-col items-center gap-1 text-slate-400">
                     <i data-lucide="timer" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Focus</span>
                 </button>
-                <button onclick="router.navigate('sleep')" id="nav-sleep" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="window.router.navigate('sleep')" id="nav-sleep" class="p-3 flex flex-col items-center gap-1 text-slate-400">
                     <i data-lucide="moon" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Sleep</span>
                 </button>
             </div>
         </nav>
         
-        <!-- Links -->
+        <!-- Footer Links -->
         <div class="fixed bottom-1 left-0 right-0 flex justify-center gap-4 text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">
             <a href="https://gem-labs-pk.github.io/To-Be/" target="_blank">App Home</a>
             <span>|</span>
@@ -117,18 +121,18 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        // --- Config ---
+        // --- Firebase Init ---
         const firebaseConfig = JSON.parse(__firebase_config);
-        const app_id = typeof __app_id !== 'undefined' ? __app_id : 'to-be-productivity';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'to-be-productivity';
         const firebaseApp = initializeApp(firebaseConfig);
         const auth = getAuth(firebaseApp);
         const db = getFirestore(firebaseApp);
 
         // --- State ---
-        let user = null;
+        let currentUser = null;
         let userData = {
             tasks: [],
             timetable: { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
@@ -136,49 +140,74 @@
         };
         let currentDay = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
         let timer = { timeLeft: 1500, active: false, interval: null, mode: 'Focus', count: 1 };
+        let deferredPrompt;
+
+        // --- Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log("SW Reg failed", err));
+            });
+        }
+
+        // --- PWA Install Logic ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('install-btn');
+            if(installBtn) installBtn.classList.remove('hidden');
+        });
+
+        document.getElementById('install-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('install-btn').classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
 
         // --- Auth Logic ---
         window.authLogic = {
             mode: 'login',
             toggleMode: () => {
-                authLogic.mode = authLogic.mode === 'login' ? 'signup' : 'login';
-                const form = document.getElementById('login-form');
-                form.innerHTML = authLogic.mode === 'login' ? `
-                    <input type="email" id="email" placeholder="Email Address" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none">
-                    <input type="password" id="password" placeholder="Password" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none">
-                    <button onclick="authLogic.handleAuth('login')" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black">Login</button>
-                    <button onclick="authLogic.toggleMode()" class="w-full text-white/60 text-xs font-bold">New here? Create Account</button>
-                ` : `
-                    <input type="email" id="email" placeholder="New Email" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none">
-                    <input type="password" id="password" placeholder="Create Password" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none">
-                    <button onclick="authLogic.handleAuth('signup')" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black">Sign Up</button>
-                    <button onclick="authLogic.toggleMode()" class="w-full text-white/60 text-xs font-bold">Already have an account? Login</button>
-                `;
+                window.authLogic.mode = window.authLogic.mode === 'login' ? 'signup' : 'login';
+                document.getElementById('auth-main-btn').innerText = window.authLogic.mode === 'login' ? 'Login' : 'Create Account';
+                document.getElementById('auth-toggle-btn').innerText = window.authLogic.mode === 'login' ? 'New here? Create Account' : 'Already have an account? Login';
             },
-            handleAuth: async (type) => {
-                const email = document.getElementById('email').value;
-                const pass = document.getElementById('password').value;
+            submit: async () => {
+                const email = document.getElementById('email').value.trim();
+                const pass = document.getElementById('password').value.trim();
                 const status = document.getElementById('auth-status');
-                status.innerText = "Processing...";
+                
+                if (!email || !pass) {
+                    status.innerText = "Please fill in all fields.";
+                    return;
+                }
 
+                status.innerText = "Processing...";
                 try {
-                    if (type === 'signup') {
+                    if (window.authLogic.mode === 'signup') {
                         const res = await createUserWithEmailAndPassword(auth, email, pass);
                         await sendEmailVerification(res.user);
-                        // Track User
-                        await setDoc(doc(db, 'artifacts', app_id, 'public', 'data', 'users', res.user.uid), {
+                        
+                        // Initialize user in public records for tracking
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', res.user.uid), {
                             email: email,
                             joined: Date.now()
                         });
-                        // Init Private Data
-                        await setDoc(doc(db, 'artifacts', app_id, 'users', res.user.uid, 'settings', 'profile'), userData);
-                        status.innerText = "Check your email for verification link!";
+                        
+                        // Initialize private data
+                        await setDoc(doc(db, 'artifacts', appId, 'users', res.user.uid, 'settings', 'profile'), userData);
+                        
+                        status.innerText = "Verification email sent! Please check your inbox and verify before logging in.";
+                        await signOut(auth);
                     } else {
                         const res = await signInWithEmailAndPassword(auth, email, pass);
                         if (!res.user.emailVerified) {
-                            status.innerText = "Please verify your email first.";
+                            status.innerText = "Your email is not verified. Please check your inbox.";
                             await signOut(auth);
-                            return;
                         }
                     }
                 } catch (err) {
@@ -188,19 +217,20 @@
             logout: () => signOut(auth)
         };
 
-        // --- Core UI & Logic ---
+        // --- UI Controller ---
         window.ui = {
             render: () => {
                 const main = document.getElementById('main-view');
-                const view = router.current;
+                const view = window.router.current;
                 
                 document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
-                document.getElementById(`nav-${view}`).classList.add('nav-active');
+                const activeNav = document.getElementById(`nav-${view}`);
+                if(activeNav) activeNav.classList.add('nav-active');
 
-                if (view === 'timetable') ui.viewTimetable(main);
-                if (view === 'tasks') ui.viewTasks(main);
-                if (view === 'focus') ui.viewFocus(main);
-                if (view === 'sleep') ui.viewSleep(main);
+                if (view === 'timetable') window.ui.viewTimetable(main);
+                if (view === 'tasks') window.ui.viewTasks(main);
+                if (view === 'focus') window.ui.viewFocus(main);
+                if (view === 'sleep') window.ui.viewSleep(main);
 
                 lucide.createIcons();
             },
@@ -209,18 +239,19 @@
                 c.innerHTML = `
                     <div class="mb-6">
                         <div class="flex overflow-x-auto gap-2 py-2 no-scrollbar">
-                            ${days.map(d => `<button onclick="ui.setDay('${d}')" class="tab-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap glass-card ${currentDay === d ? 'active' : ''}">${d}</button>`).join('')}
+                            ${days.map(d => `<button onclick="window.ui.setDay('${d}')" class="tab-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap glass-card ${currentDay === d ? 'active' : ''}">${d}</button>`).join('')}
                         </div>
                     </div>
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-black">${currentDay} Plan</h3>
-                        <button onclick="ui.openModal('slot')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ Add Slot</button>
+                        <button onclick="window.ui.openModal('slot')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ Add Slot</button>
                     </div>
                     <div class="space-y-3">
+                        ${(userData.timetable[currentDay] || []).length === 0 ? '<p class="text-center py-10 opacity-30 text-xs font-bold">No slots added for this day.</p>' : ''}
                         ${(userData.timetable[currentDay] || []).map((s, idx) => `
                             <div class="glass-card p-4 flex justify-between items-center border-l-4 ${s.type === 'busy' ? 'border-l-indigo-600' : 'border-l-emerald-500'}">
-                                <div><p class="text-[9px] font-bold text-slate-400">${s.time}</p><h4 class="font-bold">${s.label}</h4></div>
-                                <button onclick="logic.deleteSlot(${idx})" class="text-slate-300"><i data-lucide="x" class="w-4 h-4"></i></button>
+                                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${s.time}</p><h4 class="font-bold">${s.label}</h4></div>
+                                <button onclick="window.logic.deleteSlot(${idx})" class="text-slate-300 hover:text-rose-500 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
                             </div>
                         `).join('')}
                     </div>
@@ -230,16 +261,17 @@
                 c.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-black">Assignments</h3>
-                        <button onclick="ui.openModal('task')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ New</button>
+                        <button onclick="window.ui.openModal('task')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ New</button>
                     </div>
                     <div class="space-y-2">
+                        ${userData.tasks.length === 0 ? '<p class="text-center py-10 opacity-30 text-xs font-bold">Your to-do list is empty.</p>' : ''}
                         ${userData.tasks.map((t, idx) => `
                             <div class="glass-card p-4 flex items-center gap-3">
-                                <button onclick="logic.toggleTask(${idx})" class="w-5 h-5 rounded border-2 border-indigo-600 flex items-center justify-center ${t.done ? 'bg-indigo-600' : ''}">
+                                <button onclick="window.logic.toggleTask(${idx})" class="w-5 h-5 rounded border-2 border-indigo-600 flex items-center justify-center ${t.done ? 'bg-indigo-600' : ''}">
                                     ${t.done ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
                                 </button>
                                 <span class="flex-grow font-bold ${t.done ? 'line-through opacity-40' : ''}">${t.text}</span>
-                                <button onclick="logic.deleteTask(${idx})" class="text-slate-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button onclick="window.logic.deleteTask(${idx})" class="text-slate-300 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                         `).join('')}
                     </div>
@@ -259,19 +291,20 @@
                             <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-2">${timer.mode} Cycle ${timer.count}/${userData.pomodoro.cycles}</span>
                         </div>
                         <div class="flex gap-4 justify-center">
-                            <button onclick="logic.toggleTimer()" class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-500/30">
+                            <button onclick="window.logic.toggleTimer()" class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-500/30">
                                 ${timer.active ? 'Pause' : 'Focus Now'}
                             </button>
-                            <button onclick="ui.openModal('pomodoro-settings')" class="p-4 glass-card rounded-2xl"><i data-lucide="settings"></i></button>
+                            <button onclick="window.ui.openModal('pomodoro-settings')" class="p-4 glass-card rounded-2xl"><i data-lucide="settings"></i></button>
                         </div>
                     </div>
                 `;
-                document.getElementById('timer-ring').style.strokeDashoffset = 754 - (754 * timer.timeLeft / (timer.mode === 'Focus' ? userData.pomodoro.focus * 60 : userData.pomodoro.break * 60));
+                const max = (timer.mode === 'Focus' ? userData.pomodoro.focus * 60 : userData.pomodoro.break * 60);
+                document.getElementById('timer-ring').style.strokeDashoffset = 754 - (754 * timer.timeLeft / max);
             },
             viewSleep: (c) => {
-                c.innerHTML = `<div class="glass-card p-10 text-center"><i data-lucide="moon" class="w-16 h-16 mx-auto mb-4 text-indigo-400"></i><h3 class="font-bold">Sleep tracking feature coming in next update!</h3></div>`;
+                c.innerHTML = `<div class="glass-card p-10 text-center"><i data-lucide="sparkles" class="w-16 h-16 mx-auto mb-4 text-indigo-400"></i><h3 class="font-bold text-slate-800 dark:text-white">Sleep tracking is coming soon!</h3><p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Optimize your recovery</p></div>`;
             },
-            setDay: (d) => { currentDay = d; ui.render(); },
+            setDay: (d) => { currentDay = d; window.ui.render(); },
             openModal: (type) => {
                 const m = document.getElementById('modal');
                 const content = document.getElementById('modal-content');
@@ -280,30 +313,31 @@
                 if (type === 'slot') {
                     content.innerHTML = `
                         <h4 class="font-bold mb-4">Add Slot for ${currentDay}</h4>
-                        <input id="sl-label" placeholder="Activity Name" class="w-full p-4 glass-card mb-2 outline-none">
-                        <input id="sl-time" placeholder="Time (e.g. 10:00 - 12:00)" class="w-full p-4 glass-card mb-4 outline-none">
+                        <input id="sl-label" placeholder="Activity Name" class="w-full p-4 glass-card mb-2 outline-none font-bold">
+                        <input id="sl-time" placeholder="Time (e.g. 10:00 - 12:00)" class="w-full p-4 glass-card mb-4 outline-none font-bold">
                         <div class="flex gap-2">
-                            <button onclick="logic.addSlot('busy')" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Busy</button>
-                            <button onclick="logic.addSlot('free')" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-bold">Free</button>
+                            <button onclick="window.logic.addSlot('busy')" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Busy</button>
+                            <button onclick="window.logic.addSlot('free')" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-bold">Free</button>
                         </div>
                     `;
                 } else if (type === 'task') {
                     content.innerHTML = `
                         <h4 class="font-bold mb-4">New Assignment</h4>
-                        <input id="tk-val" placeholder="Assignment Title" class="w-full p-4 glass-card mb-4 outline-none">
-                        <button onclick="logic.addTask()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Save Task</button>
+                        <input id="tk-val" placeholder="Assignment Title" class="w-full p-4 glass-card mb-4 outline-none font-bold">
+                        <button onclick="window.logic.addTask()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Save Task</button>
                     `;
                 } else if (type === 'pomodoro-settings') {
                     content.innerHTML = `
                         <h4 class="font-bold mb-4">Pomodoro Settings</h4>
                         <div class="space-y-4">
-                            <div><label class="text-[10px] font-bold">Focus (mins)</label><input id="ps-f" type="number" value="${userData.pomodoro.focus}" class="w-full p-3 glass-card outline-none"></div>
-                            <div><label class="text-[10px] font-bold">Break (mins)</label><input id="ps-b" type="number" value="${userData.pomodoro.break}" class="w-full p-3 glass-card outline-none"></div>
-                            <div><label class="text-[10px] font-bold">Cycles</label><input id="ps-c" type="number" value="${userData.pomodoro.cycles}" class="w-full p-3 glass-card outline-none"></div>
-                            <button onclick="logic.saveSettings()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Apply Changes</button>
+                            <div><label class="text-[10px] font-bold uppercase text-slate-400">Focus (mins)</label><input id="ps-f" type="number" value="${userData.pomodoro.focus}" class="w-full p-3 glass-card outline-none font-bold"></div>
+                            <div><label class="text-[10px] font-bold uppercase text-slate-400">Break (mins)</label><input id="ps-b" type="number" value="${userData.pomodoro.break}" class="w-full p-3 glass-card outline-none font-bold"></div>
+                            <div><label class="text-[10px] font-bold uppercase text-slate-400">Cycles</label><input id="ps-c" type="number" value="${userData.pomodoro.cycles}" class="w-full p-3 glass-card outline-none font-bold"></div>
+                            <button onclick="window.logic.saveSettings()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Apply Changes</button>
                         </div>
                     `;
                 }
+                lucide.createIcons();
             },
             closeModal: () => document.getElementById('modal').classList.add('hidden'),
             toggleTheme: () => {
@@ -320,27 +354,27 @@
                 const time = document.getElementById('sl-time').value;
                 if (!label || !time) return;
                 userData.timetable[currentDay].push({ label, time, type });
-                await updateDoc(doc(db, 'artifacts', app_id, 'users', user.uid, 'settings', 'profile'), userData);
-                ui.closeModal();
+                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
+                window.ui.closeModal();
             },
             deleteSlot: async (idx) => {
                 userData.timetable[currentDay].splice(idx, 1);
-                await updateDoc(doc(db, 'artifacts', app_id, 'users', user.uid, 'settings', 'profile'), userData);
+                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
             },
             addTask: async () => {
                 const text = document.getElementById('tk-val').value;
                 if (!text) return;
                 userData.tasks.unshift({ text, done: false });
-                await updateDoc(doc(db, 'artifacts', app_id, 'users', user.uid, 'settings', 'profile'), userData);
-                ui.closeModal();
+                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
+                window.ui.closeModal();
             },
             toggleTask: async (idx) => {
                 userData.tasks[idx].done = !userData.tasks[idx].done;
-                await updateDoc(doc(db, 'artifacts', app_id, 'users', user.uid, 'settings', 'profile'), userData);
+                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
             },
             deleteTask: async (idx) => {
                 userData.tasks.splice(idx, 1);
-                await updateDoc(doc(db, 'artifacts', app_id, 'users', user.uid, 'settings', 'profile'), userData);
+                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
             },
             toggleTimer: () => {
                 if (timer.active) {
@@ -351,13 +385,13 @@
                     timer.interval = setInterval(() => {
                         if (timer.timeLeft > 0) {
                             timer.timeLeft--;
-                            ui.render();
+                            window.ui.render();
                         } else {
-                            logic.cycleTimer();
+                            window.logic.cycleTimer();
                         }
                     }, 1000);
                 }
-                ui.render();
+                window.ui.render();
             },
             cycleTimer: () => {
                 clearInterval(timer.interval);
@@ -371,48 +405,53 @@
                     timer.timeLeft = userData.pomodoro.focus * 60;
                     if (timer.count > userData.pomodoro.cycles) {
                         timer.count = 1;
-                        alert("Work Day Complete!");
+                        alert("Great work! You've finished your cycles.");
                     }
                 }
-                ui.render();
+                window.ui.render();
             },
             saveSettings: async () => {
                 userData.pomodoro.focus = parseInt(document.getElementById('ps-f').value);
                 userData.pomodoro.break = parseInt(document.getElementById('ps-b').value);
                 userData.pomodoro.cycles = parseInt(document.getElementById('ps-c').value);
                 timer.timeLeft = userData.pomodoro.focus * 60;
-                await updateDoc(doc(db, 'artifacts', app_id, 'users', user.uid, 'settings', 'profile'), userData);
-                ui.closeModal();
-                ui.render();
+                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
+                window.ui.closeModal();
+                window.ui.render();
             }
         };
 
         window.router = {
             current: 'timetable',
             navigate: (view) => {
-                router.current = view;
-                ui.render();
+                window.router.current = view;
+                window.ui.render();
             }
         };
 
-        // --- Auth Observer ---
+        // --- Auth & Data Flow ---
         onAuthStateChanged(auth, async (u) => {
             const authScreen = document.getElementById('auth-screen');
             if (u && u.emailVerified) {
-                user = u;
+                currentUser = u;
                 document.getElementById('user-display').innerText = u.email;
                 authScreen.classList.add('opacity-0', 'pointer-events-none');
                 
-                // Real-time data listener
-                onSnapshot(doc(db, 'artifacts', app_id, 'users', u.uid, 'settings', 'profile'), (snap) => {
+                // Firestore Data Bridge
+                const profileRef = doc(db, 'artifacts', appId, 'users', u.uid, 'settings', 'profile');
+                onSnapshot(profileRef, (snap) => {
                     if (snap.exists()) {
                         userData = snap.data();
-                        ui.render();
+                        window.ui.render();
+                    } else {
+                        // Handle first-time setup if needed
+                        setDoc(profileRef, userData);
                     }
-                }, (err) => console.log(err));
+                }, (err) => console.log("Data sync error:", err));
             } else {
-                user = null;
+                currentUser = null;
                 authScreen.classList.remove('opacity-0', 'pointer-events-none');
+                document.getElementById('user-display').innerText = "Not Verified";
             }
         });
     </script>
