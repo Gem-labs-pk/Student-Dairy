@@ -17,8 +17,11 @@
             -webkit-user-select: none;
             user-select: none;
             overscroll-behavior-y: contain;
+            background-color: #f8fafc;
         }
+        .dark body { background-color: #020617; }
         input, textarea { -webkit-user-select: text; user-select: text; }
+        
         .glass-card {
             background-color: white;
             border: 1px solid #f1f5f9;
@@ -29,282 +32,250 @@
             background-color: #0f172a;
             border: 1px solid #1e293b;
         }
+        
         .nav-active { color: var(--primary); font-weight: 800; }
         .tab-btn.active { background: var(--primary); color: white; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Animations */
+        .page-enter { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+<body class="transition-colors duration-300">
 
-    <div id="app" class="min-h-screen flex flex-col max-w-md mx-auto relative overflow-x-hidden">
+    <div id="app" class="min-h-screen flex flex-col max-w-md mx-auto relative overflow-x-hidden pb-32">
         
-        <!-- Auth Screen -->
-        <div id="auth-screen" class="fixed inset-0 z-[100] bg-indigo-600 flex flex-col items-center justify-center p-8 transition-all duration-500">
-            <div class="mb-10 text-center">
-                <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-                    <span class="text-3xl font-black text-indigo-600">TB</span>
-                </div>
-                <h1 class="text-3xl font-black text-white">To Be.</h1>
-                <p class="text-indigo-100 font-bold opacity-70 text-[10px] tracking-widest uppercase">By Gem Labs</p>
-            </div>
-            
-            <div class="w-full space-y-3" id="auth-forms">
-                <div id="form-container" class="space-y-3">
-                    <input type="email" id="email" placeholder="Email Address" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:bg-white/20">
-                    <input type="password" id="password" placeholder="Password" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:bg-white/20">
-                    <button id="auth-main-btn" onclick="window.authLogic.submit()" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black shadow-lg active:scale-95 transition-transform">Login</button>
-                    <button onclick="window.authLogic.toggleMode()" id="auth-toggle-btn" class="w-full text-white/60 text-xs font-bold">New here? Create Account</button>
-                </div>
-            </div>
-            <div id="auth-status" class="mt-6 text-white text-xs font-medium text-center px-4 leading-relaxed"></div>
-        </div>
-
-        <!-- Main UI -->
+        <!-- Header -->
         <header class="p-6 flex justify-between items-center sticky top-0 bg-inherit/80 backdrop-blur-md z-40">
             <div>
                 <h2 class="text-2xl font-black tracking-tighter">To <span class="text-indigo-600">Be.</span></h2>
-                <div class="flex items-center gap-1">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="user-display">Syncing...</p>
-                    <button onclick="window.authLogic.logout()" class="text-[8px] font-bold text-rose-500 uppercase">Logout</button>
-                </div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Gem Labs Productivity</p>
             </div>
             <div class="flex gap-2">
                 <button id="install-btn" class="hidden p-3 glass-card rounded-2xl text-indigo-600">
                     <i data-lucide="download" class="w-5 h-5"></i>
                 </button>
-                <button onclick="window.ui.toggleTheme()" class="p-3 glass-card rounded-2xl">
+                <button onclick="ui.toggleTheme()" class="p-3 glass-card rounded-2xl">
                     <i data-lucide="moon" id="theme-icon" class="w-5 h-5 text-indigo-600"></i>
                 </button>
             </div>
         </header>
 
-        <main id="main-view" class="flex-grow px-6 pb-36 overflow-y-auto">
+        <!-- Main Content -->
+        <main id="main-view" class="px-6 flex-grow pt-4 page-enter">
             <!-- Dynamic Content -->
         </main>
 
         <!-- Navigation -->
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] z-50">
             <div class="glass-card p-2 flex justify-around items-center bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl">
-                <button onclick="window.router.navigate('timetable')" id="nav-timetable" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="router.navigate('timetable')" id="nav-timetable" class="p-3 flex flex-col items-center gap-1 text-slate-400 transition-all">
                     <i data-lucide="calendar-days" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Plan</span>
                 </button>
-                <button onclick="window.router.navigate('tasks')" id="nav-tasks" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="router.navigate('tasks')" id="nav-tasks" class="p-3 flex flex-col items-center gap-1 text-slate-400 transition-all">
                     <i data-lucide="list-todo" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Tasks</span>
                 </button>
-                <button onclick="window.router.navigate('focus')" id="nav-focus" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="router.navigate('focus')" id="nav-focus" class="p-3 flex flex-col items-center gap-1 text-slate-400 transition-all">
                     <i data-lucide="timer" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Focus</span>
                 </button>
-                <button onclick="window.router.navigate('sleep')" id="nav-sleep" class="p-3 flex flex-col items-center gap-1 text-slate-400">
+                <button onclick="router.navigate('sleep')" id="nav-sleep" class="p-3 flex flex-col items-center gap-1 text-slate-400 transition-all">
                     <i data-lucide="moon" class="w-5 h-5"></i>
                     <span class="text-[9px] font-black uppercase">Sleep</span>
                 </button>
             </div>
         </nav>
         
-        <!-- Footer Links -->
-        <div class="fixed bottom-1 left-0 right-0 flex justify-center gap-4 text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+        <!-- Links -->
+        <div class="text-center w-full py-4 text-[8px] font-bold text-slate-400 uppercase tracking-widest opacity-50">
             <a href="https://gem-labs-pk.github.io/To-Be/" target="_blank">App Home</a>
-            <span>|</span>
-            <a href="https://gem-labs-pk.github.io/Gem-PWA-Store/" target="_blank">Gem PWA Store</a>
+            <span class="mx-2">|</span>
+            <a href="https://gem-labs-pk.github.io/Gem-PWA-Store/" target="_blank">Gem Store</a>
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Modal -->
     <div id="modal" class="fixed inset-0 z-[110] bg-slate-950/40 backdrop-blur-sm hidden flex items-end justify-center p-4">
         <div class="w-full max-w-sm glass-card p-6 animate-in slide-in-from-bottom-10 duration-300">
             <div id="modal-content"></div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-
-        // --- Firebase Init ---
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'to-be-productivity';
-        const firebaseApp = initializeApp(firebaseConfig);
-        const auth = getAuth(firebaseApp);
-        const db = getFirestore(firebaseApp);
-
-        // --- State ---
-        let currentUser = null;
-        let userData = {
-            tasks: [],
-            timetable: { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] },
-            pomodoro: { focus: 25, break: 5, cycles: 4 }
+    <script>
+        // --- App State ---
+        const state = {
+            tasks: JSON.parse(localStorage.getItem('tb_tasks')) || [],
+            timetable: JSON.parse(localStorage.getItem('tb_timetable')) || {
+                Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: []
+            },
+            pomodoroSettings: JSON.parse(localStorage.getItem('tb_pomo_settings')) || {
+                focus: 25, break: 5, cycles: 4
+            },
+            currentDay: new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date()),
+            timer: { timeLeft: 1500, active: false, interval: null, mode: 'Focus', count: 1 }
         };
-        let currentDay = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
-        let timer = { timeLeft: 1500, active: false, interval: null, mode: 'Focus', count: 1 };
+
+        const save = () => {
+            localStorage.setItem('tb_tasks', JSON.stringify(state.tasks));
+            localStorage.setItem('tb_timetable', JSON.stringify(state.timetable));
+            localStorage.setItem('tb_pomo_settings', JSON.stringify(state.pomodoroSettings));
+        };
+
+        // --- PWA Helper ---
         let deferredPrompt;
-
-        // --- Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log("SW Reg failed", err));
-            });
-        }
-
-        // --- PWA Install Logic ---
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            const installBtn = document.getElementById('install-btn');
-            if(installBtn) installBtn.classList.remove('hidden');
+            document.getElementById('install-btn')?.classList.remove('hidden');
         });
 
         document.getElementById('install-btn')?.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('install-btn').classList.add('hidden');
-                }
+                if (outcome === 'accepted') document.getElementById('install-btn').classList.add('hidden');
                 deferredPrompt = null;
             }
         });
 
-        // --- Auth Logic ---
-        window.authLogic = {
-            mode: 'login',
-            toggleMode: () => {
-                window.authLogic.mode = window.authLogic.mode === 'login' ? 'signup' : 'login';
-                document.getElementById('auth-main-btn').innerText = window.authLogic.mode === 'login' ? 'Login' : 'Create Account';
-                document.getElementById('auth-toggle-btn').innerText = window.authLogic.mode === 'login' ? 'New here? Create Account' : 'Already have an account? Login';
-            },
-            submit: async () => {
-                const email = document.getElementById('email').value.trim();
-                const pass = document.getElementById('password').value.trim();
-                const status = document.getElementById('auth-status');
-                
-                if (!email || !pass) {
-                    status.innerText = "Please fill in all fields.";
-                    return;
-                }
-
-                status.innerText = "Processing...";
-                try {
-                    if (window.authLogic.mode === 'signup') {
-                        const res = await createUserWithEmailAndPassword(auth, email, pass);
-                        await sendEmailVerification(res.user);
-                        
-                        // Initialize user in public records for tracking
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', res.user.uid), {
-                            email: email,
-                            joined: Date.now()
-                        });
-                        
-                        // Initialize private data
-                        await setDoc(doc(db, 'artifacts', appId, 'users', res.user.uid, 'settings', 'profile'), userData);
-                        
-                        status.innerText = "Verification email sent! Please check your inbox and verify before logging in.";
-                        await signOut(auth);
-                    } else {
-                        const res = await signInWithEmailAndPassword(auth, email, pass);
-                        if (!res.user.emailVerified) {
-                            status.innerText = "Your email is not verified. Please check your inbox.";
-                            await signOut(auth);
-                        }
-                    }
-                } catch (err) {
-                    status.innerText = err.message;
-                }
-            },
-            logout: () => signOut(auth)
+        // --- Router ---
+        const router = {
+            current: 'timetable',
+            navigate: (view) => {
+                router.current = view;
+                ui.render();
+            }
         };
 
         // --- UI Controller ---
-        window.ui = {
+        const ui = {
+            toggleTheme: () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+                lucide.createIcons();
+            },
+
             render: () => {
                 const main = document.getElementById('main-view');
-                const view = window.router.current;
-                
-                document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
-                const activeNav = document.getElementById(`nav-${view}`);
-                if(activeNav) activeNav.classList.add('nav-active');
+                main.innerHTML = '';
+                main.classList.remove('page-enter');
+                void main.offsetWidth; // Trigger reflow
+                main.classList.add('page-enter');
 
-                if (view === 'timetable') window.ui.viewTimetable(main);
-                if (view === 'tasks') window.ui.viewTasks(main);
-                if (view === 'focus') window.ui.viewFocus(main);
-                if (view === 'sleep') window.ui.viewSleep(main);
+                document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
+                document.getElementById(`nav-${router.current}`).classList.add('nav-active');
+
+                if (router.current === 'timetable') ui.viewTimetable(main);
+                if (router.current === 'tasks') ui.viewTasks(main);
+                if (router.current === 'focus') ui.viewFocus(main);
+                if (router.current === 'sleep') ui.viewSleep(main);
 
                 lucide.createIcons();
             },
+
             viewTimetable: (c) => {
                 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                 c.innerHTML = `
-                    <div class="mb-6">
-                        <div class="flex overflow-x-auto gap-2 py-2 no-scrollbar">
-                            ${days.map(d => `<button onclick="window.ui.setDay('${d}')" class="tab-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap glass-card ${currentDay === d ? 'active' : ''}">${d}</button>`).join('')}
-                        </div>
+                    <div class="flex overflow-x-auto gap-2 mb-6 pb-2 no-scrollbar">
+                        ${days.map(d => `
+                            <button onclick="ui.setDay('${d}')" class="tab-btn px-4 py-2 rounded-full text-[10px] font-black whitespace-nowrap glass-card ${state.currentDay === d ? 'active' : ''}">
+                                ${d.toUpperCase()}
+                            </button>
+                        `).join('')}
                     </div>
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-black">${currentDay} Plan</h3>
-                        <button onclick="window.ui.openModal('slot')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ Add Slot</button>
+                        <h3 class="text-xl font-black">${state.currentDay} Plan</h3>
+                        <button onclick="ui.openModal('slot')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ ADD SLOT</button>
                     </div>
                     <div class="space-y-3">
-                        ${(userData.timetable[currentDay] || []).length === 0 ? '<p class="text-center py-10 opacity-30 text-xs font-bold">No slots added for this day.</p>' : ''}
-                        ${(userData.timetable[currentDay] || []).map((s, idx) => `
+                        ${(state.timetable[state.currentDay] || []).length === 0 ? `
+                            <div class="text-center py-12 opacity-30">
+                                <i data-lucide="calendar" class="w-12 h-12 mx-auto mb-2"></i>
+                                <p class="text-xs font-bold uppercase">No plans for today</p>
+                            </div>
+                        ` : (state.timetable[state.currentDay] || []).map((s, idx) => `
                             <div class="glass-card p-4 flex justify-between items-center border-l-4 ${s.type === 'busy' ? 'border-l-indigo-600' : 'border-l-emerald-500'}">
-                                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${s.time}</p><h4 class="font-bold">${s.label}</h4></div>
-                                <button onclick="window.logic.deleteSlot(${idx})" class="text-slate-300 hover:text-rose-500 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                                <div>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${s.time}</p>
+                                    <h4 class="font-bold text-slate-800 dark:text-slate-100">${s.label}</h4>
+                                </div>
+                                <button onclick="logic.deleteSlot(${idx})" class="text-slate-300 hover:text-rose-500"><i data-lucide="x" class="w-4 h-4"></i></button>
                             </div>
                         `).join('')}
                     </div>
                 `;
             },
+
             viewTasks: (c) => {
                 c.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-black">Assignments</h3>
-                        <button onclick="window.ui.openModal('task')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ New</button>
+                        <button onclick="ui.openModal('task')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-xl font-black">+ NEW TASK</button>
                     </div>
-                    <div class="space-y-2">
-                        ${userData.tasks.length === 0 ? '<p class="text-center py-10 opacity-30 text-xs font-bold">Your to-do list is empty.</p>' : ''}
-                        ${userData.tasks.map((t, idx) => `
-                            <div class="glass-card p-4 flex items-center gap-3">
-                                <button onclick="window.logic.toggleTask(${idx})" class="w-5 h-5 rounded border-2 border-indigo-600 flex items-center justify-center ${t.done ? 'bg-indigo-600' : ''}">
-                                    ${t.done ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
+                    <div class="space-y-3">
+                        ${state.tasks.length === 0 ? `
+                            <div class="text-center py-12 opacity-30">
+                                <i data-lucide="check-circle" class="w-12 h-12 mx-auto mb-2"></i>
+                                <p class="text-xs font-bold uppercase">All done!</p>
+                            </div>
+                        ` : state.tasks.map((t, idx) => `
+                            <div class="glass-card p-4 flex items-center gap-4">
+                                <button onclick="logic.toggleTask(${idx})" class="w-6 h-6 rounded-lg border-2 border-indigo-600 flex items-center justify-center transition-all ${t.done ? 'bg-indigo-600' : ''}">
+                                    ${t.done ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}
                                 </button>
-                                <span class="flex-grow font-bold ${t.done ? 'line-through opacity-40' : ''}">${t.text}</span>
-                                <button onclick="window.logic.deleteTask(${idx})" class="text-slate-300 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <span class="flex-grow font-bold text-slate-700 dark:text-slate-200 ${t.done ? 'line-through opacity-40' : ''}">${t.text}</span>
+                                <button onclick="logic.deleteTask(${idx})" class="text-slate-300 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                         `).join('')}
                     </div>
                 `;
             },
+
             viewFocus: (c) => {
-                const m = Math.floor(timer.timeLeft / 60);
-                const s = timer.timeLeft % 60;
+                const m = Math.floor(state.timer.timeLeft / 60);
+                const s = state.timer.timeLeft % 60;
                 c.innerHTML = `
                     <div class="text-center py-6">
-                        <div class="w-64 h-64 glass-card mx-auto flex flex-col items-center justify-center relative mb-10">
+                        <div class="w-64 h-64 glass-card mx-auto flex flex-col items-center justify-center relative mb-12">
                             <svg class="absolute inset-0 w-full h-full -rotate-90">
                                 <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-100 dark:text-slate-800" />
                                 <circle id="timer-ring" cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="transparent" class="text-indigo-600 transition-all duration-1000" stroke-dasharray="754" />
                             </svg>
-                            <span class="text-6xl font-black">${m}:${s < 10 ? '0'+s : s}</span>
-                            <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-2">${timer.mode} Cycle ${timer.count}/${userData.pomodoro.cycles}</span>
+                            <span class="text-6xl font-black tracking-tighter">${m}:${s < 10 ? '0'+s : s}</span>
+                            <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-2">${state.timer.mode} Cycle ${state.timer.count}/${state.pomodoroSettings.cycles}</span>
                         </div>
                         <div class="flex gap-4 justify-center">
-                            <button onclick="window.logic.toggleTimer()" class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-500/30">
-                                ${timer.active ? 'Pause' : 'Focus Now'}
+                            <button onclick="logic.toggleTimer()" class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-500/30 active:scale-95 transition-all">
+                                ${state.timer.active ? 'PAUSE' : 'FOCUS NOW'}
                             </button>
-                            <button onclick="window.ui.openModal('pomodoro-settings')" class="p-4 glass-card rounded-2xl"><i data-lucide="settings"></i></button>
+                            <button onclick="ui.openModal('settings')" class="p-4 glass-card rounded-2xl"><i data-lucide="settings"></i></button>
                         </div>
                     </div>
                 `;
-                const max = (timer.mode === 'Focus' ? userData.pomodoro.focus * 60 : userData.pomodoro.break * 60);
-                document.getElementById('timer-ring').style.strokeDashoffset = 754 - (754 * timer.timeLeft / max);
+                const max = (state.timer.mode === 'Focus' ? state.pomodoroSettings.focus * 60 : state.pomodoroSettings.break * 60);
+                const offset = 754 - (754 * state.timer.timeLeft / max);
+                document.getElementById('timer-ring').style.strokeDashoffset = offset;
             },
+
             viewSleep: (c) => {
-                c.innerHTML = `<div class="glass-card p-10 text-center"><i data-lucide="sparkles" class="w-16 h-16 mx-auto mb-4 text-indigo-400"></i><h3 class="font-bold text-slate-800 dark:text-white">Sleep tracking is coming soon!</h3><p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Optimize your recovery</p></div>`;
+                c.innerHTML = `
+                    <div class="glass-card p-10 text-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-none shadow-lg">
+                        <i data-lucide="moon" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
+                        <h3 class="text-xl font-bold mb-2">Rest Cycles</h3>
+                        <p class="text-xs font-bold uppercase opacity-70 mb-8">Optimize your recovery</p>
+                        <div class="py-12 border-2 border-white/20 rounded-3xl border-dashed">
+                            <p class="text-xs font-bold uppercase tracking-widest">Coming Soon</p>
+                        </div>
+                    </div>
+                `;
             },
-            setDay: (d) => { currentDay = d; window.ui.render(); },
+
+            setDay: (d) => { state.currentDay = d; ui.render(); },
+            
             openModal: (type) => {
                 const m = document.getElementById('modal');
                 const content = document.getElementById('modal-content');
@@ -312,148 +283,115 @@
                 
                 if (type === 'slot') {
                     content.innerHTML = `
-                        <h4 class="font-bold mb-4">Add Slot for ${currentDay}</h4>
-                        <input id="sl-label" placeholder="Activity Name" class="w-full p-4 glass-card mb-2 outline-none font-bold">
-                        <input id="sl-time" placeholder="Time (e.g. 10:00 - 12:00)" class="w-full p-4 glass-card mb-4 outline-none font-bold">
-                        <div class="flex gap-2">
-                            <button onclick="window.logic.addSlot('busy')" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Busy</button>
-                            <button onclick="window.logic.addSlot('free')" class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-bold">Free</button>
+                        <h4 class="font-black text-lg mb-4">Plan ${state.currentDay}</h4>
+                        <div class="space-y-3">
+                            <input id="sl-label" placeholder="Activity (e.g. Study Math)" class="w-full p-4 glass-card outline-none font-bold">
+                            <input id="sl-time" placeholder="Time (e.g. 10:00 - 12:00)" class="w-full p-4 glass-card outline-none font-bold">
+                            <div class="flex gap-2 pt-2">
+                                <button onclick="logic.addSlot('busy')" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black">BUSY</button>
+                                <button onclick="logic.addSlot('free')" class="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-black">FREE</button>
+                            </div>
                         </div>
                     `;
                 } else if (type === 'task') {
                     content.innerHTML = `
-                        <h4 class="font-bold mb-4">New Assignment</h4>
-                        <input id="tk-val" placeholder="Assignment Title" class="w-full p-4 glass-card mb-4 outline-none font-bold">
-                        <button onclick="window.logic.addTask()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Save Task</button>
+                        <h4 class="font-black text-lg mb-4">New Task</h4>
+                        <input id="tk-val" placeholder="Assignment name" class="w-full p-4 glass-card mb-4 outline-none font-bold">
+                        <button onclick="logic.addTask()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black">SAVE ASSIGNMENT</button>
                     `;
-                } else if (type === 'pomodoro-settings') {
+                } else if (type === 'settings') {
                     content.innerHTML = `
-                        <h4 class="font-bold mb-4">Pomodoro Settings</h4>
+                        <h4 class="font-black text-lg mb-6 text-center">Focus Settings</h4>
                         <div class="space-y-4">
-                            <div><label class="text-[10px] font-bold uppercase text-slate-400">Focus (mins)</label><input id="ps-f" type="number" value="${userData.pomodoro.focus}" class="w-full p-3 glass-card outline-none font-bold"></div>
-                            <div><label class="text-[10px] font-bold uppercase text-slate-400">Break (mins)</label><input id="ps-b" type="number" value="${userData.pomodoro.break}" class="w-full p-3 glass-card outline-none font-bold"></div>
-                            <div><label class="text-[10px] font-bold uppercase text-slate-400">Cycles</label><input id="ps-c" type="number" value="${userData.pomodoro.cycles}" class="w-full p-3 glass-card outline-none font-bold"></div>
-                            <button onclick="window.logic.saveSettings()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Apply Changes</button>
+                            <div><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Focus (min)</label><input id="ps-f" type="number" value="${state.pomodoroSettings.focus}" class="w-full p-4 glass-card outline-none font-bold"></div>
+                            <div><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Break (min)</label><input id="ps-b" type="number" value="${state.pomodoroSettings.break}" class="w-full p-4 glass-card outline-none font-bold"></div>
+                            <div><label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Total Cycles</label><input id="ps-c" type="number" value="${state.pomodoroSettings.cycles}" class="w-full p-4 glass-card outline-none font-bold"></div>
+                            <button onclick="logic.saveSettings()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black mt-2">APPLY</button>
                         </div>
                     `;
                 }
                 lucide.createIcons();
             },
-            closeModal: () => document.getElementById('modal').classList.add('hidden'),
-            toggleTheme: () => {
-                document.documentElement.classList.toggle('dark');
-                const isDark = document.documentElement.classList.contains('dark');
-                document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-                lucide.createIcons();
-            }
+            closeModal: () => document.getElementById('modal').classList.add('hidden')
         };
 
-        window.logic = {
-            addSlot: async (type) => {
+        const logic = {
+            addSlot: (type) => {
                 const label = document.getElementById('sl-label').value;
                 const time = document.getElementById('sl-time').value;
                 if (!label || !time) return;
-                userData.timetable[currentDay].push({ label, time, type });
-                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
-                window.ui.closeModal();
+                state.timetable[state.currentDay].push({ label, time, type });
+                save(); ui.closeModal(); ui.render();
             },
-            deleteSlot: async (idx) => {
-                userData.timetable[currentDay].splice(idx, 1);
-                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
+            deleteSlot: (idx) => {
+                state.timetable[state.currentDay].splice(idx, 1);
+                save(); ui.render();
             },
-            addTask: async () => {
+            addTask: () => {
                 const text = document.getElementById('tk-val').value;
                 if (!text) return;
-                userData.tasks.unshift({ text, done: false });
-                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
-                window.ui.closeModal();
+                state.tasks.unshift({ text, done: false });
+                save(); ui.closeModal(); ui.render();
             },
-            toggleTask: async (idx) => {
-                userData.tasks[idx].done = !userData.tasks[idx].done;
-                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
+            toggleTask: (idx) => {
+                state.tasks[idx].done = !state.tasks[idx].done;
+                save(); ui.render();
             },
-            deleteTask: async (idx) => {
-                userData.tasks.splice(idx, 1);
-                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
+            deleteTask: (idx) => {
+                state.tasks.splice(idx, 1);
+                save(); ui.render();
             },
             toggleTimer: () => {
-                if (timer.active) {
-                    clearInterval(timer.interval);
-                    timer.active = false;
+                if (state.timer.active) {
+                    clearInterval(state.timer.interval);
+                    state.timer.active = false;
                 } else {
-                    timer.active = true;
-                    timer.interval = setInterval(() => {
-                        if (timer.timeLeft > 0) {
-                            timer.timeLeft--;
-                            window.ui.render();
+                    state.timer.active = true;
+                    state.timer.interval = setInterval(() => {
+                        if (state.timer.timeLeft > 0) {
+                            state.timer.timeLeft--;
+                            ui.render();
                         } else {
-                            window.logic.cycleTimer();
+                            logic.cycleTimer();
                         }
                     }, 1000);
                 }
-                window.ui.render();
+                ui.render();
             },
             cycleTimer: () => {
-                clearInterval(timer.interval);
-                timer.active = false;
-                if (timer.mode === 'Focus') {
-                    timer.mode = 'Break';
-                    timer.timeLeft = userData.pomodoro.break * 60;
+                clearInterval(state.timer.interval);
+                state.timer.active = false;
+                if (state.timer.mode === 'Focus') {
+                    state.timer.mode = 'Break';
+                    state.timer.timeLeft = state.pomodoroSettings.break * 60;
                 } else {
-                    timer.mode = 'Focus';
-                    timer.count++;
-                    timer.timeLeft = userData.pomodoro.focus * 60;
-                    if (timer.count > userData.pomodoro.cycles) {
-                        timer.count = 1;
-                        alert("Great work! You've finished your cycles.");
+                    state.timer.mode = 'Focus';
+                    state.timer.count++;
+                    state.timer.timeLeft = state.pomodoroSettings.focus * 60;
+                    if (state.timer.count > state.pomodoroSettings.cycles) {
+                        state.timer.count = 1;
+                        alert("Well done! All cycles complete.");
                     }
                 }
-                window.ui.render();
+                ui.render();
             },
-            saveSettings: async () => {
-                userData.pomodoro.focus = parseInt(document.getElementById('ps-f').value);
-                userData.pomodoro.break = parseInt(document.getElementById('ps-b').value);
-                userData.pomodoro.cycles = parseInt(document.getElementById('ps-c').value);
-                timer.timeLeft = userData.pomodoro.focus * 60;
-                await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'profile'), userData);
-                window.ui.closeModal();
-                window.ui.render();
+            saveSettings: () => {
+                state.pomodoroSettings.focus = parseInt(document.getElementById('ps-f').value);
+                state.pomodoroSettings.break = parseInt(document.getElementById('ps-b').value);
+                state.pomodoroSettings.cycles = parseInt(document.getElementById('ps-c').value);
+                state.timer.timeLeft = state.pomodoroSettings.focus * 60;
+                save(); ui.closeModal(); ui.render();
             }
         };
 
-        window.router = {
-            current: 'timetable',
-            navigate: (view) => {
-                window.router.current = view;
-                window.ui.render();
+        // Boot
+        window.onload = () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch(console.error);
             }
+            state.timer.timeLeft = state.pomodoroSettings.focus * 60;
+            ui.render();
         };
-
-        // --- Auth & Data Flow ---
-        onAuthStateChanged(auth, async (u) => {
-            const authScreen = document.getElementById('auth-screen');
-            if (u && u.emailVerified) {
-                currentUser = u;
-                document.getElementById('user-display').innerText = u.email;
-                authScreen.classList.add('opacity-0', 'pointer-events-none');
-                
-                // Firestore Data Bridge
-                const profileRef = doc(db, 'artifacts', appId, 'users', u.uid, 'settings', 'profile');
-                onSnapshot(profileRef, (snap) => {
-                    if (snap.exists()) {
-                        userData = snap.data();
-                        window.ui.render();
-                    } else {
-                        // Handle first-time setup if needed
-                        setDoc(profileRef, userData);
-                    }
-                }, (err) => console.log("Data sync error:", err));
-            } else {
-                currentUser = null;
-                authScreen.classList.remove('opacity-0', 'pointer-events-none');
-                document.getElementById('user-display').innerText = "Not Verified";
-            }
-        });
     </script>
 </body>
 </html>
