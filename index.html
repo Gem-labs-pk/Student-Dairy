@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#4f46e5">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
     <title>To Be. | Gem Labs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -15,8 +12,9 @@
         
         :root {
             --primary: #4f46e5;
-            --success: #10b981;
-            --focus: #f59e0b;
+            --bg-light: #f8fafc;
+            --card-light: #ffffff;
+            --text-light: #0f172a;
         }
 
         body {
@@ -24,160 +22,429 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
-            user-select: none; /* Prevents text selection for native feel */
+            user-select: none; /* Prevent text selection for native feel */
+            background-color: var(--bg-light);
+            color: var(--text-light);
             overscroll-behavior-y: contain;
         }
 
+        /* Allow selection in inputs */
         input, textarea { -webkit-user-select: text; user-select: text; }
 
+        .dark {
+            --bg-light: #020617;
+            --card-light: #0f172a;
+            --text-light: #f8fafc;
+        }
+
         .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            background-color: var(--card-light);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px -2px rgba(0,0,0,0.05);
             border-radius: 1.5rem;
         }
 
         .dark .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: none;
         }
 
-        .nav-active { color: var(--primary); font-weight: 800; }
-        
-        /* App Navigation Animations */
-        .page-transition { transition: all 0.3s ease; }
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-4px);
+            transition: transform 0.2s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 0px; }
+
+        .pomodoro-circle {
+            transition: stroke-dashoffset 1s linear;
+        }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+<body class="transition-colors duration-300">
 
-    <div id="app" class="min-h-screen flex flex-col max-w-md mx-auto shadow-xl relative overflow-hidden">
+    <div id="app-container" class="max-w-md mx-auto min-h-screen flex flex-col relative overflow-hidden">
         
-        <header class="p-6 flex justify-between items-center">
+        <!-- Auth Screen (Overlay) -->
+        <div id="auth-screen" class="fixed inset-0 z-[100] bg-indigo-600 flex flex-col items-center justify-center p-8 transition-transform duration-500">
+            <div class="mb-12 text-center">
+                <div class="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                    <span class="text-4xl font-black text-indigo-600">TB</span>
+                </div>
+                <h1 class="text-4xl font-black text-white">To Be.</h1>
+                <p class="text-indigo-100 font-bold opacity-80 uppercase tracking-widest text-xs mt-2">Gem Labs Productivity</p>
+            </div>
+            
+            <div class="w-full space-y-3">
+                <input type="text" id="auth-username" placeholder="Username" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 outline-none focus:bg-white/20 transition-all">
+                <input type="password" id="auth-password" placeholder="Password" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 outline-none focus:bg-white/20 transition-all">
+                <button onclick="app.login()" class="w-full py-5 bg-white text-indigo-600 rounded-2xl font-black shadow-xl active:scale-95 transition-transform">Get Productive</button>
+                <p class="text-center text-white/60 text-xs font-bold pt-4">Don't have an account? <span class="text-white underline">Sign Up</span></p>
+            </div>
+        </div>
+
+        <!-- Main App Content -->
+        <header class="p-6 flex justify-between items-center sticky top-0 bg-inherit z-40">
             <div>
-                <h1 class="text-2xl font-800 tracking-tighter">To <span class="text-indigo-600">Be.</span></h1>
-                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Gem Labs Productivity</p>
+                <h2 class="text-2xl font-black tracking-tighter" id="header-title">To Be.</h2>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="header-subtitle">Good Morning</p>
             </div>
             <div class="flex gap-2">
-                <button id="auth-btn" onclick="router.navigate('auth')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                    <i data-lucide="user" class="w-5 h-5"></i>
+                <button onclick="app.toggleTheme()" class="p-3 glass-card rounded-2xl">
+                    <i data-lucide="moon" id="theme-icon" class="w-5 h-5 text-indigo-600"></i>
                 </button>
             </div>
         </header>
 
-        <main id="main-view" class="px-6 flex-grow pb-32">
-            </main>
+        <main id="main-content" class="flex-grow px-6 pb-32 overflow-y-auto">
+            <!-- Content Injected Here -->
+        </main>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50">
-            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-2 rounded-3xl shadow-2xl flex justify-around">
-                <button onclick="router.navigate('timetable')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
+        <!-- Navigation Bar -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] z-50">
+            <div class="glass-card p-2 flex justify-around items-center">
+                <button onclick="router.navigate('timetable')" id="nav-timetable" class="nav-item p-3 flex flex-col items-center gap-1 text-slate-400">
                     <i data-lucide="calendar" class="w-5 h-5"></i>
-                    <span class="text-[10px]">Time</span>
+                    <span class="text-[9px] font-black uppercase">Schedule</span>
                 </button>
-                <button onclick="router.navigate('tasks')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
+                <button onclick="router.navigate('tasks')" id="nav-tasks" class="nav-item p-3 flex flex-col items-center gap-1 text-slate-400">
                     <i data-lucide="check-square" class="w-5 h-5"></i>
-                    <span class="text-[10px]">Tasks</span>
+                    <span class="text-[9px] font-black uppercase">Tasks</span>
                 </button>
-                <button onclick="router.navigate('focus')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
-                    <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i>
-                    <span class="text-[10px]">Focus</span>
+                <button onclick="router.navigate('focus')" id="nav-focus" class="nav-item p-3 flex flex-col items-center gap-1 text-slate-400">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                    <span class="text-[9px] font-black uppercase">Focus</span>
                 </button>
-                <button onclick="router.navigate('sleep')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
+                <button onclick="router.navigate('sleep')" id="nav-sleep" class="nav-item p-3 flex flex-col items-center gap-1 text-slate-400">
                     <i data-lucide="moon" class="w-5 h-5"></i>
-                    <span class="text-[10px]">Sleep</span>
+                    <span class="text-[9px] font-black uppercase">Sleep</span>
                 </button>
             </div>
         </nav>
     </div>
 
+    <!-- Modal for Adding Content -->
+    <div id="modal" class="fixed inset-0 z-[110] bg-slate-950/40 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-4">
+        <div class="w-full max-w-sm glass-card p-6 bg-white dark:bg-slate-900 animate-in slide-in-from-bottom-4 duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modal-title" class="text-xl font-bold">New Item</h3>
+                <button onclick="app.closeModal()" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="modal-body" class="space-y-4"></div>
+        </div>
+    </div>
+
     <script>
         // --- State ---
         const state = {
-            tasks: JSON.parse(localStorage.getItem('tb_tasks')) || [],
-            timetable: JSON.parse(localStorage.getItem('tb_time')) || { slots: [] },
             user: JSON.parse(localStorage.getItem('tb_user')) || null,
+            tasks: JSON.parse(localStorage.getItem('tb_tasks')) || [],
+            timetable: JSON.parse(localStorage.getItem('tb_timetable')) || [
+                { id: 1, label: 'Work Block', time: '09:00 - 12:00', type: 'busy' },
+                { id: 2, label: 'Lunch Break', time: '12:00 - 13:00', type: 'free' }
+            ],
+            sleep: JSON.parse(localStorage.getItem('tb_sleep')) || [],
+            timer: {
+                timeLeft: 1500,
+                isRunning: false,
+                interval: null,
+                mode: 'Focus' // or 'Break'
+            },
+            currentView: 'timetable',
             history: ['timetable']
         };
 
+        const saveState = () => {
+            localStorage.setItem('tb_tasks', JSON.stringify(state.tasks));
+            localStorage.setItem('tb_timetable', JSON.stringify(state.timetable));
+            localStorage.setItem('tb_sleep', JSON.stringify(state.sleep));
+            localStorage.setItem('tb_user', JSON.stringify(state.user));
+        };
+
+        // --- Router ---
         const router = {
-            navigate: (view, pushToHistory = true) => {
-                if (pushToHistory) state.history.push(view);
-                renderView(view);
+            navigate: (view, push = true) => {
+                state.currentView = view;
+                if (push) {
+                    state.history.push(view);
+                    history.pushState({view}, "", "");
+                }
+                app.render();
+            }
+        };
+
+        window.onpopstate = (e) => {
+            if (state.history.length > 1) {
+                state.history.pop();
+                const last = state.history[state.history.length - 1];
+                router.navigate(last, false);
+            }
+        };
+
+        // --- Core App Logic ---
+        const app = {
+            init: () => {
+                if (state.user) {
+                    document.getElementById('auth-screen').style.transform = 'translateY(-100%)';
+                }
+                app.render();
+                lucide.createIcons();
             },
-            back: () => {
-                if (state.history.length > 1) {
-                    state.history.pop();
-                    const lastView = state.history[state.history.length - 1];
-                    renderView(lastView);
+
+            login: () => {
+                const user = document.getElementById('auth-username').value;
+                if (!user) return;
+                state.user = { name: user };
+                saveState();
+                document.getElementById('auth-screen').style.transform = 'translateY(-100%)';
+                app.render();
+            },
+
+            toggleTheme: () => {
+                document.documentElement.classList.toggle('dark');
+                const icon = document.getElementById('theme-icon');
+                const isDark = document.documentElement.classList.contains('dark');
+                icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+                lucide.createIcons();
+            },
+
+            render: () => {
+                const main = document.getElementById('main-content');
+                const subtitle = document.getElementById('header-subtitle');
+                
+                // Update Nav UI
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                document.getElementById(`nav-${state.currentView}`).classList.add('active');
+
+                // Route Rendering
+                switch(state.currentView) {
+                    case 'timetable':
+                        subtitle.innerText = "Schedule for Today";
+                        app.viewTimetable(main);
+                        break;
+                    case 'tasks':
+                        subtitle.innerText = "Active Assignments";
+                        app.viewTasks(main);
+                        break;
+                    case 'focus':
+                        subtitle.innerText = "Deep Focus Mode";
+                        app.viewFocus(main);
+                        break;
+                    case 'sleep':
+                        subtitle.innerText = "Rest Cycles";
+                        app.viewSleep(main);
+                        break;
+                }
+                lucide.createIcons();
+            },
+
+            // VIEWS
+            viewTimetable: (container) => {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">Daily Routine</h3>
+                        <button onclick="app.openModal('timetable')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ Add Slot</button>
+                    </div>
+                    <div class="space-y-3">
+                        ${state.timetable.map(slot => `
+                            <div class="glass-card p-4 flex justify-between items-center border-l-4 ${slot.type === 'busy' ? 'border-l-indigo-500' : 'border-l-emerald-500'}">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">${slot.time}</p>
+                                    <h4 class="font-bold text-slate-800 dark:text-slate-100">${slot.label}</h4>
+                                </div>
+                                <button onclick="app.removeItem('timetable', ${slot.id})" class="text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            viewTasks: (container) => {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">To-Do</h3>
+                        <button onclick="app.openModal('tasks')" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold">+ New Task</button>
+                    </div>
+                    <div class="space-y-3">
+                        ${state.tasks.length === 0 ? '<p class="text-center py-10 opacity-40">No assignments today.</p>' : ''}
+                        ${state.tasks.map(task => `
+                            <div class="glass-card p-4 flex items-center gap-4">
+                                <button onclick="app.toggleTask(${task.id})" class="w-6 h-6 rounded-lg border-2 border-indigo-600 flex items-center justify-center ${task.done ? 'bg-indigo-600' : ''}">
+                                    ${task.done ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}
+                                </button>
+                                <span class="font-bold flex-grow ${task.done ? 'line-through opacity-40' : ''}">${task.text}</span>
+                                <button onclick="app.removeItem('tasks', ${task.id})" class="text-slate-300"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            viewFocus: (container) => {
+                const m = Math.floor(state.timer.timeLeft / 60);
+                const s = state.timer.timeLeft % 60;
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10">
+                        <div class="relative w-64 h-64 mb-12">
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-200 dark:text-slate-800" />
+                                <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="transparent" 
+                                    class="text-indigo-600 pomodoro-circle" 
+                                    stroke-dasharray="754" 
+                                    stroke-dashoffset="${754 - (754 * state.timer.timeLeft / (state.timer.mode === 'Focus' ? 1500 : 300))}" />
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-5xl font-black">${m}:${s < 10 ? '0'+s : s}</span>
+                                <span class="text-xs font-black uppercase text-indigo-600 mt-2 tracking-widest">${state.timer.mode}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="app.toggleTimer()" class="px-10 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-500/30">
+                                ${state.timer.isRunning ? 'Pause' : 'Start Session'}
+                            </button>
+                            <button onclick="app.resetTimer()" class="p-4 glass-card"><i data-lucide="refresh-cw"></i></button>
+                        </div>
+                        <p class="mt-8 text-xs text-slate-400 font-bold text-center">Standard 25:05 Pomodoro cycle enabled.</p>
+                    </div>
+                `;
+            },
+
+            viewSleep: (container) => {
+                container.innerHTML = `
+                    <div class="glass-card p-8 bg-gradient-to-br from-slate-900 to-indigo-950 text-white text-center mb-8 border-none overflow-hidden relative">
+                        <i data-lucide="sparkles" class="absolute top-4 right-4 text-white/20 w-12 h-12"></i>
+                        <h3 class="text-2xl font-black mb-2">Sleep Tracker</h3>
+                        <p class="text-xs text-indigo-300 font-bold uppercase tracking-widest mb-6">8 Hours Recommended</p>
+                        <button onclick="app.logSleep()" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black">Start Sleep Timer</button>
+                    </div>
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-black text-slate-400 uppercase mb-4">Past Sessions</h4>
+                        ${state.sleep.length === 0 ? '<p class="text-center py-6 opacity-30 text-xs font-bold">No history yet.</p>' : ''}
+                        ${state.sleep.map(log => `
+                            <div class="glass-card p-4 flex justify-between items-center">
+                                <span class="font-bold">${log.date}</span>
+                                <span class="text-indigo-600 font-black">${log.hours} Hours</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            // UTILS
+            openModal: (type) => {
+                const modal = document.getElementById('modal');
+                const body = document.getElementById('modal-body');
+                const title = document.getElementById('modal-title');
+                modal.classList.remove('hidden');
+                
+                if (type === 'tasks') {
+                    title.innerText = "New Assignment";
+                    body.innerHTML = `
+                        <input id="inp-task" type="text" placeholder="Assignment name" class="w-full p-4 rounded-xl glass-card border-none outline-none font-bold">
+                        <button onclick="app.addItem('tasks')" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-black">Save</button>
+                    `;
+                } else {
+                    title.innerText = "Add Schedule Slot";
+                    body.innerHTML = `
+                        <input id="inp-label" type="text" placeholder="Activity (e.g. Study Math)" class="w-full p-4 rounded-xl glass-card border-none outline-none font-bold">
+                        <input id="inp-time" type="text" placeholder="Time (e.g. 14:00 - 16:00)" class="w-full p-4 rounded-xl glass-card border-none outline-none font-bold">
+                        <div class="flex gap-2">
+                            <button onclick="app.addItem('timetable', 'busy')" class="flex-1 py-4 bg-indigo-600 text-white rounded-xl font-black">Busy Slot</button>
+                            <button onclick="app.addItem('timetable', 'free')" class="flex-1 py-4 bg-emerald-600 text-white rounded-xl font-black">Free Slot</button>
+                        </div>
+                    `;
+                }
+                lucide.createIcons();
+            },
+
+            closeModal: () => document.getElementById('modal').classList.add('hidden'),
+
+            addItem: (type, subType = null) => {
+                if (type === 'tasks') {
+                    const val = document.getElementById('inp-task').value;
+                    if (!val) return;
+                    state.tasks.unshift({ id: Date.now(), text: val, done: false });
+                } else if (type === 'timetable') {
+                    const label = document.getElementById('inp-label').value;
+                    const time = document.getElementById('inp-time').value;
+                    if (!label || !time) return;
+                    state.timetable.push({ id: Date.now(), label, time, type: subType });
+                }
+                saveState();
+                app.closeModal();
+                app.render();
+            },
+
+            removeItem: (type, id) => {
+                state[type] = state[type].filter(item => item.id !== id);
+                saveState();
+                app.render();
+            },
+
+            toggleTask: (id) => {
+                const task = state.tasks.find(t => t.id === id);
+                if (task) task.done = !task.done;
+                saveState();
+                app.render();
+            },
+
+            toggleTimer: () => {
+                if (state.timer.isRunning) {
+                    clearInterval(state.timer.interval);
+                    state.timer.isRunning = false;
+                } else {
+                    state.timer.isRunning = true;
+                    state.timer.interval = setInterval(() => {
+                        if (state.timer.timeLeft > 0) {
+                            state.timer.timeLeft--;
+                            app.render();
+                        } else {
+                            app.completeTimer();
+                        }
+                    }, 1000);
+                }
+                app.render();
+            },
+
+            completeTimer: () => {
+                clearInterval(state.timer.interval);
+                state.timer.isRunning = false;
+                if (state.timer.mode === 'Focus') {
+                    state.timer.mode = 'Break';
+                    state.timer.timeLeft = 300; // 5 mins
+                } else {
+                    state.timer.mode = 'Focus';
+                    state.timer.timeLeft = 1500; // 25 mins
+                }
+                alert(`${state.timer.mode === 'Break' ? 'Focus Session Done!' : 'Break Finished!'}`);
+                app.render();
+            },
+
+            resetTimer: () => {
+                clearInterval(state.timer.interval);
+                state.timer.isRunning = false;
+                state.timer.timeLeft = 1500;
+                state.timer.mode = 'Focus';
+                app.render();
+            },
+
+            logSleep: () => {
+                const hours = prompt("How many hours did you sleep?");
+                if (hours) {
+                    state.sleep.unshift({ date: new Date().toLocaleDateString(), hours: parseFloat(hours) });
+                    saveState();
+                    app.render();
                 }
             }
         };
 
-        // --- View Controller ---
-        function renderView(view) {
-            const container = document.getElementById('main-view');
-            
-            const views = {
-                timetable: `
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold">Daily Timetable</h2>
-                        <button class="text-xs bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full font-bold">Edit Day</button>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="glass-card p-4 flex justify-between border-l-4 border-l-emerald-500">
-                            <span>08:00 - 10:00</span> <span class="font-bold">Free Time</span>
-                        </div>
-                        <div class="glass-card p-4 flex justify-between border-l-4 border-l-indigo-500">
-                            <span>10:00 - 14:00</span> <span class="font-bold">Core Work (Busy)</span>
-                        </div>
-                    </div>
-                `,
-                tasks: `
-                    <h2 class="text-xl font-bold mb-6">To-Do List</h2>
-                    <div class="glass-card p-4 mb-4">
-                        <input type="text" placeholder="Add assignment..." class="w-full bg-transparent outline-none">
-                    </div>
-                    <div class="opacity-40 text-center py-10">No pending assignments.</div>
-                `,
-                focus: `
-                    <div class="text-center py-12">
-                        <div class="w-48 h-48 border-8 border-amber-500 rounded-full mx-auto flex items-center justify-center mb-8">
-                            <span class="text-4xl font-black">25:00</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Pomodoro Session</h3>
-                        <button class="bg-amber-500 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-amber-500/30">Start Focusing</button>
-                    </div>
-                `,
-                sleep: `
-                    <h2 class="text-xl font-bold mb-6">Sleep Tracker</h2>
-                    <div class="glass-card p-6 text-center">
-                        <p class="text-slate-400 text-sm mb-4">Tracking your rest cycles</p>
-                        <i data-lucide="moon" class="w-12 h-12 mx-auto text-indigo-400 mb-4"></i>
-                        <button class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold">Log Sleep</button>
-                    </div>
-                `,
-                auth: `
-                    <h2 class="text-xl font-bold mb-6">Join Gem Labs</h2>
-                    <div class="space-y-4">
-                        <input type="email" placeholder="Email" class="glass-card w-full p-4 outline-none">
-                        <input type="password" placeholder="Password" class="glass-card w-full p-4 outline-none">
-                        <button class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Sign In / Up</button>
-                    </div>
-                `
-            };
-
-            container.innerHTML = views[view] || views.timetable;
-            lucide.createIcons();
-        }
-
-        // Native Back Button Handling
-        window.addEventListener('popstate', (e) => {
-            e.preventDefault();
-            router.back();
-        });
-
-        // Init
-        window.history.pushState({view: 'timetable'}, "");
-        renderView('timetable');
+        // Boot
+        window.onload = app.init;
     </script>
 </body>
 </html>
