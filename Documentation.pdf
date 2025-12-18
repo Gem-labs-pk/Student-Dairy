@@ -1,0 +1,39 @@
+To Be. - Product Documentation
+
+Developed by Gem Labs, To Be. is a specialized productivity application designed for Windows and Android. It addresses core issues like task forgetfulness and lack of time management through a high-performance, PWA-ready architecture.
+
+Core Features
+
+Dynamic Timetable: Divide your day into 'Busy' and 'Free' blocks. Completely editable to match daily variations.
+
+Assignment Tracker: A robust To-Do list for managing assignments with persistence.
+
+Pomodoro Focus: A 25:05 cycle timer with visual progress to facilitate deep work sessions.
+
+Sleep Logger: Track rest cycles to optimize mental recovery.
+
+Native Interaction:
+
+Long-press text selection is disabled to ensure a native app feel.
+
+Built-in router handles the back button to navigate pages instead of closing the app.
+
+High-contrast UI (Light/Dark) ensures readability in all lighting conditions.
+
+Technical Stack
+
+UI: Tailwind CSS for responsive, fluid design.
+
+Icons: Lucide-React.
+
+State: Persistent LocalStorage with an abstracted db interface.
+
+PWA: Integrated Service Worker (sw.js) and Manifest (manifest.json) for full installability.
+
+User Guide
+
+Login: Enter any username to start. Your data is tied to this session.
+
+Schedule: Click "+ Add Slot" to define your day. Green indicates free time; Purple indicates busy work.
+
+Focus: Tap "Start Session" for a 25-minute work block. The app will alert you when it's time for a break.
