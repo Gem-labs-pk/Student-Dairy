@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tobe-v3-final';
+const CACHE_NAME = 'tobe-v3.0-final';
 const ASSETS = [
   './',
   './index.html',
@@ -31,7 +31,7 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Network-first for firebase, cache-first for static assets
+  // Network-first for firebase to allow dynamic auth/data, cache-first for static assets
   if (e.request.url.includes('firebase')) {
     e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
   } else {
