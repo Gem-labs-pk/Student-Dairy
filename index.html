@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-    <title>Student Diary</title>
+    <title>To Be. | Gem Labs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -15,329 +15,169 @@
         
         :root {
             --primary: #4f46e5;
-            --primary-dark: #4338ca;
+            --success: #10b981;
+            --focus: #f59e0b;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            /* Prevent browser selection like a native app */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
-            user-select: none;
+            user-select: none; /* Prevents text selection for native feel */
             overscroll-behavior-y: contain;
         }
 
-        /* Allow selection only in inputs and textareas */
-        input, textarea {
-            -webkit-user-select: text;
-            user-select: text;
-        }
+        input, textarea { -webkit-user-select: text; user-select: text; }
 
-        .light-mode-bg {
-            background-color: #ffffff;
-            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        .dark .dark-mode-bg {
-            background-color: #0f172a;
-            background-image: radial-gradient(#1e293b 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        /* Improved Readability for White Mode */
         .glass-card {
-            background: #ffffff;
-            border: 1.5px solid #f1f5f9;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 1.5rem;
         }
 
         .dark .glass-card {
             background: rgba(30, 41, 59, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
         }
 
-        .nav-active {
-            color: var(--primary);
-            background: rgba(79, 70, 229, 0.1);
-        }
-
-        /* Action Button Facet */
-        .fab-shape {
-            border-radius: 20px;
-            transform: rotate(45deg);
-        }
-        .fab-shape i {
-            transform: rotate(-45deg);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        .modal-animate {
-            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .nav-active { color: var(--primary); font-weight: 800; }
+        
+        /* App Navigation Animations */
+        .page-transition { transition: all 0.3s ease; }
     </style>
 </head>
-<body class="light-mode-bg dark:dark-mode-bg transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
 
-    <div id="app" class="min-h-screen flex flex-col max-w-2xl mx-auto shadow-2xl bg-slate-50/50 dark:bg-transparent">
+    <div id="app" class="min-h-screen flex flex-col max-w-md mx-auto shadow-xl relative overflow-hidden">
         
-        <!-- App Header -->
-        <header class="px-6 py-6 flex justify-between items-center">
+        <header class="p-6 flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-800 tracking-tight text-slate-900 dark:text-white">Student <span class="text-indigo-600">Diary</span></h1>
-                <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1" id="date-display"></p>
+                <h1 class="text-2xl font-800 tracking-tighter">To <span class="text-indigo-600">Be.</span></h1>
+                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Gem Labs Productivity</p>
             </div>
-            <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm">
-                <i data-lucide="moon" id="theme-icon" class="w-5 h-5 text-slate-600 dark:text-yellow-400"></i>
-            </button>
+            <div class="flex gap-2">
+                <button id="auth-btn" onclick="router.navigate('auth')" class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+            </div>
         </header>
 
-        <!-- Dynamic Main Content -->
-        <main id="main-content" class="px-6 flex-grow pb-32">
-            <!-- View will be rendered here -->
-        </main>
+        <main id="main-view" class="px-6 flex-grow pb-32">
+            </main>
 
-        <!-- Bottom Navigation -->
-        <nav class="fixed bottom-6 left-6 right-6 max-w-md mx-auto z-50">
-            <div class="bg-white dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-2 rounded-[2.5rem] shadow-2xl flex items-center justify-between">
-                <button onclick="router.navigate('notes')" id="nav-notes" class="flex-1 py-3 px-2 rounded-3xl flex items-center justify-center gap-2 transition-all font-bold text-slate-400">
-                    <i data-lucide="book-text" class="w-5 h-5"></i>
-                    <span class="text-xs">Notes</span>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50">
+            <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-2 rounded-3xl shadow-2xl flex justify-around">
+                <button onclick="router.navigate('timetable')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
+                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                    <span class="text-[10px]">Time</span>
                 </button>
-                
-                <div class="relative -top-8">
-                    <button onclick="ui.openModal()" class="w-14 h-14 bg-indigo-600 text-white fab-shape flex items-center justify-center shadow-lg shadow-indigo-500/40 active:scale-90 transition-transform">
-                        <i data-lucide="plus" class="w-8 h-8"></i>
-                    </button>
-                </div>
-
-                <button onclick="router.navigate('tasks')" id="nav-tasks" class="flex-1 py-3 px-2 rounded-3xl flex items-center justify-center gap-2 transition-all font-bold text-slate-400">
-                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                    <span class="text-xs">Tasks</span>
+                <button onclick="router.navigate('tasks')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
+                    <i data-lucide="check-square" class="w-5 h-5"></i>
+                    <span class="text-[10px]">Tasks</span>
+                </button>
+                <button onclick="router.navigate('focus')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
+                    <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i>
+                    <span class="text-[10px]">Focus</span>
+                </button>
+                <button onclick="router.navigate('sleep')" class="p-3 rounded-2xl flex flex-col items-center gap-1">
+                    <i data-lucide="moon" class="w-5 h-5"></i>
+                    <span class="text-[10px]">Sleep</span>
                 </button>
             </div>
         </nav>
     </div>
 
-    <!-- Universal Creation Drawer -->
-    <div id="modal-overlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[60] hidden flex items-end">
-        <div id="modal-content" class="w-full bg-white dark:bg-slate-900 rounded-t-[3rem] p-8 modal-animate max-w-2xl mx-auto border-t border-slate-200 dark:border-slate-800">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="modal-title">New Entry</h3>
-                <button onclick="ui.closeModal()" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-
-            <div id="form-container" class="space-y-4">
-                <!-- Dynamic forms injected here -->
-            </div>
-        </div>
-    </div>
-
     <script>
-        // --- State Management ---
-        const db = {
-            notes: JSON.parse(localStorage.getItem('sd_notes')) || [],
-            tasks: JSON.parse(localStorage.getItem('sd_tasks')) || [],
-            save: () => {
-                localStorage.setItem('sd_notes', JSON.stringify(db.notes));
-                localStorage.setItem('sd_tasks', JSON.stringify(db.tasks));
-            }
+        // --- State ---
+        const state = {
+            tasks: JSON.parse(localStorage.getItem('tb_tasks')) || [],
+            timetable: JSON.parse(localStorage.getItem('tb_time')) || { slots: [] },
+            user: JSON.parse(localStorage.getItem('tb_user')) || null,
+            history: ['timetable']
         };
 
         const router = {
-            currentView: 'notes',
-            navigate: (view) => {
-                router.currentView = view;
-                // Add state to history for back button handling
-                history.pushState({view}, "", "");
-                ui.render();
-            }
-        };
-
-        // --- UI Controller ---
-        const ui = {
-            isDark: false,
-            modalOpen: false,
-
-            init: () => {
-                lucide.createIcons();
-                document.getElementById('date-display').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-                
-                // Back button interceptor
-                window.onpopstate = (event) => {
-                    if (ui.modalOpen) {
-                        ui.closeModal(false); // Close without changing history again
-                    } else if (router.currentView !== 'notes') {
-                        router.currentView = 'notes';
-                        ui.render();
-                    }
-                };
-
-                ui.render();
+            navigate: (view, pushToHistory = true) => {
+                if (pushToHistory) state.history.push(view);
+                renderView(view);
             },
-
-            render: () => {
-                const container = document.getElementById('main-content');
-                container.innerHTML = '';
-                
-                // Update Nav UI
-                document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-indigo-600'));
-                document.getElementById(`nav-${router.currentView}`).classList.add('nav-active', 'text-indigo-600');
-
-                if (router.currentView === 'notes') {
-                    if (db.notes.length === 0) {
-                        container.innerHTML = `<div class="text-center py-24 opacity-30"><i data-lucide="scroll-text" class="w-16 h-16 mx-auto mb-4"></i><p class="font-bold">No lecture notes yet.</p></div>`;
-                    } else {
-                        db.notes.forEach(note => {
-                            container.innerHTML += `
-                                <div class="glass-card p-6 rounded-3xl mb-4 relative overflow-hidden group">
-                                    <div class="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
-                                    <div class="flex justify-between items-start mb-2">
-                                        <h3 class="font-bold text-slate-900 dark:text-white text-lg">${note.title}</h3>
-                                        <button onclick="logic.deleteNote(${note.id})" class="text-slate-300 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                    </div>
-                                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">${note.body}</p>
-                                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                                        <i data-lucide="clock" class="w-3 h-3"></i>
-                                        ${new Date(note.id).toLocaleDateString()}
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    }
-                } else if (router.currentView === 'tasks') {
-                    container.innerHTML = `<h2 class="text-xl font-bold mb-6 text-slate-800 dark:text-slate-200">Pending Tasks</h2>`;
-                    if (db.tasks.length === 0) {
-                        container.innerHTML += `<div class="text-center py-10 opacity-30"><p>Everything is done!</p></div>`;
-                    }
-                    db.tasks.forEach(task => {
-                        container.innerHTML += `
-                            <div class="glass-card p-5 rounded-3xl flex items-center gap-4 mb-3 border-l-4 border-l-emerald-500">
-                                <button onclick="logic.toggleTask(${task.id})" class="w-6 h-6 rounded-full border-2 border-emerald-500/30 flex items-center justify-center ${task.done ? 'bg-emerald-500' : ''}">
-                                    ${task.done ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}
-                                </button>
-                                <div class="flex-grow">
-                                    <h4 class="font-bold text-slate-800 dark:text-slate-200 ${task.done ? 'line-through opacity-50' : ''}">${task.text}</h4>
-                                    <p class="text-[10px] font-bold text-slate-400 mt-0.5">${new Date(task.time).toLocaleString()}</p>
-                                </div>
-                                <button onclick="logic.deleteTask(${task.id})" class="text-slate-300"><i data-lucide="x" class="w-4 h-4"></i></button>
-                            </div>
-                        `;
-                    });
-                }
-                lucide.createIcons();
-            },
-
-            openModal: () => {
-                ui.modalOpen = true;
-                history.pushState({modal: true}, "", ""); // For back button intercept
-                document.getElementById('modal-overlay').classList.remove('hidden');
-                
-                const form = document.getElementById('form-container');
-                if (router.currentView === 'notes') {
-                    document.getElementById('modal-title').innerText = "Write Note";
-                    form.innerHTML = `
-                        <input id="f-title" type="text" placeholder="Subject/Topic" class="w-full bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl outline-none font-bold text-slate-900 dark:text-white border border-transparent focus:border-indigo-500">
-                        <textarea id="f-body" placeholder="Start typing your lecture details..." class="w-full bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl outline-none h-48 resize-none text-slate-800 dark:text-slate-200 border border-transparent focus:border-indigo-500"></textarea>
-                        <button onclick="logic.addNote()" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-bold shadow-xl">Save Note</button>
-                    `;
-                } else {
-                    document.getElementById('modal-title').innerText = "Add Task";
-                    form.innerHTML = `
-                        <input id="f-task" type="text" placeholder="What needs to be done?" class="w-full bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl outline-none font-bold text-slate-900 dark:text-white border border-transparent focus:border-indigo-500">
-                        <input id="f-time" type="datetime-local" class="w-full bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl outline-none text-slate-800 dark:text-slate-200">
-                        <button onclick="logic.addTask()" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-bold shadow-xl">Set Reminder</button>
-                    `;
-                }
-                lucide.createIcons();
-            },
-
-            closeModal: (popHistory = true) => {
-                ui.modalOpen = false;
-                document.getElementById('modal-overlay').classList.add('hidden');
-                if (popHistory) history.back();
-            }
-        };
-
-        // --- App Logic ---
-        const logic = {
-            addNote: () => {
-                const title = document.getElementById('f-title').value;
-                const body = document.getElementById('f-body').value;
-                if (!title || !body) return;
-                db.notes.unshift({ id: Date.now(), title, body });
-                db.save();
-                ui.closeModal();
-                ui.render();
-            },
-            deleteNote: (id) => {
-                db.notes = db.notes.filter(n => n.id !== id);
-                db.save();
-                ui.render();
-            },
-            addTask: () => {
-                const text = document.getElementById('f-task').value;
-                const time = document.getElementById('f-time').value;
-                if (!text || !time) return;
-                const task = { id: Date.now(), text, time, done: false };
-                db.tasks.unshift(task);
-                db.save();
-                
-                // Browser-based notification trigger
-                logic.scheduleNotify(task);
-
-                ui.closeModal();
-                ui.render();
-            },
-            toggleTask: (id) => {
-                const task = db.tasks.find(t => t.id === id);
-                if (task) task.done = !task.done;
-                db.save();
-                ui.render();
-            },
-            deleteTask: (id) => {
-                db.tasks = db.tasks.filter(t => t.id !== id);
-                db.save();
-                ui.render();
-            },
-            scheduleNotify: (task) => {
-                const delay = new Date(task.time).getTime() - Date.now();
-                if (delay > 0 && "Notification" in window) {
-                    if (Notification.permission === "granted") {
-                        setTimeout(() => {
-                            new Notification("Student Diary Reminder", { body: task.text });
-                        }, delay);
-                    }
+            back: () => {
+                if (state.history.length > 1) {
+                    state.history.pop();
+                    const lastView = state.history[state.history.length - 1];
+                    renderView(lastView);
                 }
             }
         };
 
-        function toggleTheme() {
-            ui.isDark = !ui.isDark;
-            document.documentElement.classList.toggle('dark');
-            document.getElementById('theme-icon').setAttribute('data-lucide', ui.isDark ? 'sun' : 'moon');
+        // --- View Controller ---
+        function renderView(view) {
+            const container = document.getElementById('main-view');
+            
+            const views = {
+                timetable: `
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold">Daily Timetable</h2>
+                        <button class="text-xs bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full font-bold">Edit Day</button>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="glass-card p-4 flex justify-between border-l-4 border-l-emerald-500">
+                            <span>08:00 - 10:00</span> <span class="font-bold">Free Time</span>
+                        </div>
+                        <div class="glass-card p-4 flex justify-between border-l-4 border-l-indigo-500">
+                            <span>10:00 - 14:00</span> <span class="font-bold">Core Work (Busy)</span>
+                        </div>
+                    </div>
+                `,
+                tasks: `
+                    <h2 class="text-xl font-bold mb-6">To-Do List</h2>
+                    <div class="glass-card p-4 mb-4">
+                        <input type="text" placeholder="Add assignment..." class="w-full bg-transparent outline-none">
+                    </div>
+                    <div class="opacity-40 text-center py-10">No pending assignments.</div>
+                `,
+                focus: `
+                    <div class="text-center py-12">
+                        <div class="w-48 h-48 border-8 border-amber-500 rounded-full mx-auto flex items-center justify-center mb-8">
+                            <span class="text-4xl font-black">25:00</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Pomodoro Session</h3>
+                        <button class="bg-amber-500 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-amber-500/30">Start Focusing</button>
+                    </div>
+                `,
+                sleep: `
+                    <h2 class="text-xl font-bold mb-6">Sleep Tracker</h2>
+                    <div class="glass-card p-6 text-center">
+                        <p class="text-slate-400 text-sm mb-4">Tracking your rest cycles</p>
+                        <i data-lucide="moon" class="w-12 h-12 mx-auto text-indigo-400 mb-4"></i>
+                        <button class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold">Log Sleep</button>
+                    </div>
+                `,
+                auth: `
+                    <h2 class="text-xl font-bold mb-6">Join Gem Labs</h2>
+                    <div class="space-y-4">
+                        <input type="email" placeholder="Email" class="glass-card w-full p-4 outline-none">
+                        <input type="password" placeholder="Password" class="glass-card w-full p-4 outline-none">
+                        <button class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold">Sign In / Up</button>
+                    </div>
+                `
+            };
+
+            container.innerHTML = views[view] || views.timetable;
             lucide.createIcons();
         }
 
-        // --- PWA Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js');
-            });
-        }
-        
-        // Notification Request
-        if ("Notification" in window) Notification.requestPermission();
+        // Native Back Button Handling
+        window.addEventListener('popstate', (e) => {
+            e.preventDefault();
+            router.back();
+        });
 
-        // Boot
-        ui.init();
+        // Init
+        window.history.pushState({view: 'timetable'}, "");
+        renderView('timetable');
     </script>
 </body>
 </html>
