@@ -1,36 +1,30 @@
-const CACHE_NAME = 'gem-diary-v1.0';
+const CACHE_NAME = 'tobe-v1';
 const ASSETS = [
-  'index.html',
-  'manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://unpkg.com/lucide@latest'
+    '/',
+    '/index.html',
+    '/manifest.json',
+    'https://cdn.tailwindcss.com',
+    'https://unpkg.com/lucide@latest'
 ];
 
-// Install Event
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
+self.addEventListener('install', (e) => {
+    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
 });
 
-// Fetch Event (Offline Support)
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
+self.addEventListener('fetch', (e) => {
+    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
 });
 
-// Push Notification Event
-self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : { title: 'Gem Alert', body: 'New University Update' };
-  const options = {
-    body: data.body,
-    icon: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png',
-    vibrate: [100, 50, 100]
-  };
-  event.waitUntil(self.registration.showNotification(data.title, options));
+// Logic for Automated Reports at 10 PM and Sunday Morning
+self.addEventListener('periodicsync', (event) => {
+    if (event.tag === 'daily-report') {
+        event.waitUntil(sendReportNotification("Daily Summary", "Check your 10 PM performance report."));
+    }
 });
+
+async function sendReportNotification(title, body) {
+    return self.registration.showNotification(title, {
+        body: body,
+        icon: '/logo.svg'
+    });
+}
